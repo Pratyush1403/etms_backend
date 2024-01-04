@@ -1,8 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 
-const mongoose = require("mongoose");
-const autoIncrement = require("mongoose-auto-increment");
+const mongoose = require('mongoose');
+const AutoIncrement = require('mongoose-sequence')(mongoose);
 const Employee = require("./db/employee");
 const Project = require('./db/project'); // Import your Mongoose model
 const Task = require("./db/task");
@@ -21,8 +21,6 @@ mongoose.connect("mongodb+srv://pratyushsharma1404:pratyush@dbetms.5zp5afe.mongo
     console.log('connection successful');
 }).catch((err) => console.log('no connection'));
 
-autoIncrement.initialize(mongoose.connection);
-
 const employeeSchema = new mongoose.Schema({
   // The empId field will be auto-incremented
   name: String,
@@ -37,7 +35,7 @@ const employeeSchema = new mongoose.Schema({
 
  
 // Associate the schema with the auto-increment plugin
-employeeSchema.plugin(autoIncrement.plugin, { model: "Employee", field: "empId" });
+employeeSchema.plugin(AutoIncrement, { inc_field: 'empId' });
 
 const EmployeeModel = mongoose.model("Employee", employeeSchema);
 
@@ -50,7 +48,7 @@ app.post("/signin", async (req, res) => {
         return res.status(200).json(employee);
       }
       else{
-        return res.status(200).json({ result: "No User Found" });
+        return res.status(201).json({ result: "No User Found" });
       }
       
     } else {
